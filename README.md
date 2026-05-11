@@ -2,13 +2,14 @@
 A DLL to run processes in a SandBox
 
 ## HOW TO USE IT:
-1. Create a dll project c++/cli;
-2. Copy, <strong>CHECK</strong> and Paste the code in c++ project;
-3. Select x64 arch;
-4. Compile it;
-5. Create a new C# project;
-6. In dependecies, add Project Reference, add dll;
-7. Use this code:
+1. Open Visual Studio e select "Create a new project";
+2. Create a "CLR Class Library (.NET)" (Classes Libraries CLR).
+3. Copy, <strong>CHECK</strong> and Paste the code in c++ project;
+4. Select x64 arch;
+5. Compile it;
+6. Create a new C# project;
+7. In dependecies, add Project Reference, add dll;
+8. Use this code:
 ```
 using FDSandbox;
 
@@ -35,5 +36,5 @@ catch (Exception ex)
 }
 
 ```
-8. In Project select x64 arch;
-9. Compile it!
+9. In Project select x64 arch;
+10. Compile it!
