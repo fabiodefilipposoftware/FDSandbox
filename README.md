@@ -32,7 +32,7 @@ try
     bool result = launcher.Launch(programPath);
 
     if (result) {
-        Console.WriteLine("Process launched cin FDSandbox (No Admin)!");
+        Console.WriteLine("Process launched in FDSandbox (No Admin)!");
     } else {
         Console.WriteLine("Error during execution of sandbox.");
     }
