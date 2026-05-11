@@ -1,6 +1,13 @@
 # FDSandbox
 A DLL to run processes in a SandBox
 
+## WARNING:
+<strong>USE THIS TOOL AS YOUR RISK!</strong>
+
+<strong>THIS TOOL IS A WORKING IN PROGRESS!</strong>
+
+<strong>USING THIS TOOL YOU WILL ACCEPT DI LICENSE OF USE!</strong>
+
 ## HOW TO USE IT:
 1. Open Visual Studio e select "Create a new project";
 2. Create a "CLR Class Library (.NET)" (Classes Libraries CLR).
