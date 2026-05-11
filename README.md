@@ -8,6 +8,8 @@ A DLL to run processes in a SandBox
 
 <strong>USING THIS TOOL YOU WILL ACCEPT DI LICENSE OF USE!</strong>
 
+<strong>I assume no responsibility for any ineffectiveness of this Sandbox or any damage it may cause to the operating system or the files contained within it.</strong>
+
 ## HOW TO USE IT:
 1. Open Visual Studio e select "Create a new project";
 2. Create a "CLR Class Library (.NET)" (Classes Libraries CLR).
