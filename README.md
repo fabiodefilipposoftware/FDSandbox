@@ -35,5 +35,5 @@ catch (Exception ex)
 }
 
 ```
-9. In Project select x64 arch;
-10. Compile it!
+8. In Project select x64 arch;
+9. Compile it!
