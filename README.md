@@ -47,3 +47,6 @@ catch (Exception ex)
 ```
 9. In Project select x64 arch;
 10. Compile it!
+
+## RELEASE:
+I have compiled the release version of this Sandbox. You can download the exe and dll files from the release page.
