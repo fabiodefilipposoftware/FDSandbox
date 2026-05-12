@@ -15,11 +15,11 @@ namespace FDSandbox {
     public ref class SecureLauncher {
     private:
         // Funzione interna che gestisce la logica Win32 nativa
-        void InternalSetting(LPCWSTR cmd) {
+        UInt32 InternalSetting(LPCWSTR cmd) {
             HANDLE hToken = NULL;
             HANDLE hNewToken = NULL;
             HANDLE hJob = NULL;
-
+            UInt32 pid = 0;
 
             // 1. Apertura del token del processo attuale
             if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY, &hToken)) {
@@ -83,7 +83,7 @@ namespace FDSandbox {
                     // 6. Inserimento nel Job e ripristino dell'esecuzione
                     AssignProcessToJobObject(hJob, pi.hProcess);
                     ResumeThread(pi.hThread);
-
+                    pid = pi.dwProcessId;
 
                     // Pulizia degli handle del processo figlio
                     CloseHandle(pi.hThread);
@@ -96,23 +96,24 @@ namespace FDSandbox {
             }
             
             if (hToken) CloseHandle(hToken);
+            return pid;
         }
 
 
     public:
         // Metodo pubblico richiamabile da C#
-        bool Launch(String^ commandLine) {
-            if (String::IsNullOrEmpty(commandLine)) return false;
+        UInt32 Launch(String^ commandLine) {
+            if (String::IsNullOrEmpty(commandLine)) return -1;
 
 
             // Blocca la stringa gestita in memoria per passarla al codice nativo
             pin_ptr<const wchar_t> pinnedCmd = PtrToStringChars(commandLine);
             
             try {
-                InternalSetting(pinnedCmd);
-                return true;
+                return InternalSetting(pinnedCmd);
+                
             } catch (...) {
-                return false;
+                return -1;
             }
         }
     };
