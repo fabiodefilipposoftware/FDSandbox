@@ -1,6 +1,6 @@
 ﻿#include <windows.h>
 #include <aclapi.h>
-#include <vcclr.h> // Indispensabile per PtrToStringChars
+#include <vcclr.h> // raccomanded for PtrToStringChars
 
 
 #pragma comment(lib, "advapi32.lib")
@@ -14,20 +14,20 @@ using namespace System;
 namespace FDSandbox {
     public ref class SecureLauncher {
     private:
-        // Funzione interna che gestisce la logica Win32 nativa
+        HANDLE hJob = NULL;
+        // Internat function that mamages the  native Win32 logic
         UInt32 InternalSetting(LPCWSTR cmd) {
             HANDLE hToken = NULL;
             HANDLE hNewToken = NULL;
-            HANDLE hJob = NULL;
             UInt32 pid = 0;
 
-            // 1. Apertura del token del processo attuale
+            // 1. opening of the process token
             if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY, &hToken)) {
                 return;
             }
 
 
-            // 2. Recupero del SID del gruppo Administrators per disabilitarlo
+            // 2. getting of Administrators group SID for disabling
             BYTE adminSid[SECURITY_MAX_SID_SIZE];
             DWORD sidSize = sizeof(adminSid);
             CreateWellKnownSid(WinBuiltinAdministratorsSid, NULL, &adminSid, &sidSize);
@@ -35,24 +35,24 @@ namespace FDSandbox {
 
             SID_AND_ATTRIBUTES sidsToDisable[1];
             sidsToDisable[0].Sid = (PSID)&adminSid;
-            sidsToDisable[0].Attributes = 0; // Impostato a Deny-only
+            sidsToDisable[0].Attributes = 0; // Deny-only
 
 
-            // 3. Creazione del Restricted Token
+            // 3. Creation of the Restricted Token
             if (CreateRestrictedToken(
                 hToken,
-                DISABLE_MAX_PRIVILEGE, // Rimuove i privilegi pericolosi
-                1, sidsToDisable,      // Disabilita il gruppo Admin
+                DISABLE_MAX_PRIVILEGE, // Removing high privileges
+                1, sidsToDisable,      // Disabling group Admin
                 0, NULL, 
                 0, NULL, 
                 &hNewToken)) 
             {
-                // 4. Configurazione del Job Object per i limiti fisici
+                // 4. Configuration of the Job Object for limits
                 hJob = CreateJobObject(NULL, NULL);
                 JOBOBJECT_EXTENDED_LIMIT_INFORMATION jeli = { 0 };
 
 
-                // Impostazione limiti: 100MB RAM e divieto di creare sottoprocessi
+                // Setting limits: 128MB RAM e forbide of subprocesses creation 
                 jeli.BasicLimitInformation.LimitFlags = JOB_OBJECT_LIMIT_PROCESS_MEMORY | 
                                                         JOB_OBJECT_LIMIT_JOB_MEMORY | 
                                                         JOB_OBJECT_LIMIT_ACTIVE_PROCESS;
@@ -64,12 +64,12 @@ namespace FDSandbox {
                 SetInformationJobObject(hJob, JobObjectExtendedLimitInformation, &jeli, sizeof(jeli));
 
 
-                // 5. Preparazione avvio processo
+                // 5. Preparation of starting process
                 STARTUPINFO si = { sizeof(si) };
                 PROCESS_INFORMATION pi;
 
 
-                // Lancio in stato sospeso per poterlo inserire nel Job prima che esegua codice
+                // Suspend the state because assignement in to the Job before code execution
                 if (CreateProcessAsUser(
                     hNewToken, 
                     NULL, 
@@ -80,18 +80,18 @@ namespace FDSandbox {
                     NULL, NULL, 
                     &si, &pi)) 
                 {
-                    // 6. Inserimento nel Job e ripristino dell'esecuzione
+                    // 6. Assignement in to the Job and resume execution
                     AssignProcessToJobObject(hJob, pi.hProcess);
                     ResumeThread(pi.hThread);
                     pid = pi.dwProcessId;
 
-                    // Pulizia degli handle del processo figlio
+                    // Cleaning son process handles
                     CloseHandle(pi.hThread);
                     CloseHandle(pi.hProcess);
                 }
                 
-                // Pulizia handle locali
-                if (hJob) CloseHandle(hJob);
+                // Cleaning local handles
+                //if (hJob) CloseHandle(hJob);
                 CloseHandle(hNewToken);
             }
             
@@ -101,7 +101,7 @@ namespace FDSandbox {
 
 
     public:
-        // Metodo pubblico richiamabile da C#
+        // pubblic method callable from C#
         UInt32 Launch(String^ commandLine) {
             if (String::IsNullOrEmpty(commandLine)) return -1;
 
