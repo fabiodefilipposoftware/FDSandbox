@@ -27,7 +27,8 @@ static void Monitoring(uint targetPid)
     // Create a session to audit Windows Kernel
     using (var session = new TraceEventSession(KernelTraceEventParser.KernelSessionName))
     {
-        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry | KernelTraceEventParser.Keywords.NetworkTCPIP);
+        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry | KernelTraceEventParser.Keywords.NetworkTCPIP
+KernelTraceEventParser.Keywords.Process | KernelTraceEventParser.Keywords.Thread | KernelTraceEventParser.Keywords.VirtualAlloc);
 
         // FILTER FOR FILES
         session.Source.Kernel.FileIOCreate += (data) =>
@@ -55,9 +56,34 @@ static void Monitoring(uint targetPid)
         {
             if (data.ProcessID == targetPid)
             {
-                // data.FileName ti dà il percorso completo della DLL caricata dal malware
                 Console.WriteLine($"[DLL LOADED] {data.FileName} (Base Address: 0x{data.ImageBase:X})");
             }
+    };
+
+    session.Source.Kernel.ProcessStart += (data) =>
+    {
+        if (data.ParentID == targetPid)
+        {
+            Console.WriteLine($"[ALERT - SON PROCESSO] The malware has run: {data.ProcessName} (New PID: {data.ProcessID})");
+        }
+    };
+
+    // 2. MONITORING MEMORY (ANALISI ANTI-UNPACKING / INJECTION)
+    session.Source.Kernel.VirtualAlloc += (data) =>
+    {
+        if (data.ProcessID == targetPid)
+        {
+            Console.WriteLine($"[ALLOCATED MEMORY] Size: {data.Count} byte - Address: 0x{data.Address:X}");
+        }
+    };
+
+    // 3. MONITORING CREATED THREAD
+    session.Source.Kernel.ThreadStart += (data) =>
+    {
+        if (data.ProcessID == targetPid)
+        {
+            Console.WriteLine($"[THREAD CREATED] Thread ID: {data.ThreadID} in the malware process");
+        }
     };
 
         // startint events audit
