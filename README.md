@@ -27,7 +27,7 @@ static void Monitoring(uint targetPid)
     // Create a session to audit Windows Kernel
     using (var session = new TraceEventSession(KernelTraceEventParser.KernelSessionName))
     {
-        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry | KernelTraceEventParser.Keywords.NetworkTCPIP
+        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry | KernelTraceEventParser.Keywords.NetworkTCPIP |
 KernelTraceEventParser.Keywords.Process | KernelTraceEventParser.Keywords.Thread | KernelTraceEventParser.Keywords.VirtualAlloc);
 
         // FILTER FOR FILES
