@@ -99,7 +99,15 @@ namespace FDSandbox {
             return pid;
         }
 
-
+   public:
+        // CORRETTO: Il distruttore pulisce il Job Object quando la classe viene rilasciata
+        ~SecureLauncher() {
+            if (hJob != NULL) {
+                CloseHandle(hJob);
+                hJob = NULL;
+            }
+        }
+        
     public:
         // pubblic method callable from C#
         UInt32 Launch(String^ commandLine) {
