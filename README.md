@@ -53,24 +53,25 @@ static void Main(string[] args)
     try 
     {
         // 1. Class wrapper
-        SecureLauncher launcher = new SecureLauncher();
-
+        using(SecureLauncher launcher = new SecureLauncher())
+        {
         // 2. Path of suspicious exe (check and sanitize)
-        string programPath = args[0];
+            string programPath = args[0];
 
         // 3. run the process
-        int pid = launcher.Launch(programPath);
+            int pid = launcher.Launch(programPath);
 
-        if (pid > 0) {
-            Console.WriteLine("Process launched in FDSandbox (No Admin)!");
-            Task.Run(() => Monitoring(pid));
-        } else {
-            Console.WriteLine("Error during execution of sandbox.");
-     b  }
-    }
-    catch (Exception ex) 
-    {
-        Console.WriteLine($"CRITIC ERROR: {ex.Message}");
+            if (pid > 0) {
+                Console.WriteLine("Process launched in FDSandbox (No Admin)!");
+                Task.Run(() => Monitoring(pid));
+            } else {
+                Console.WriteLine("Error during execution of sandbox.");
+            }
+        }
+        catch (Exception ex) 
+        {
+            Console.WriteLine($"CRITIC ERROR: {ex.Message}");
+        }
     }
 }
 ```
