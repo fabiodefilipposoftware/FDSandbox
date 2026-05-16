@@ -23,7 +23,7 @@ namespace FDSandbox {
 
             // 1. opening of the process token
             if (!OpenProcessToken(GetCurrentProcess(), TOKEN_DUPLICATE | TOKEN_ASSIGN_PRIMARY | TOKEN_QUERY, &hToken)) {
-                return;
+                return -1;
             }
 
 
