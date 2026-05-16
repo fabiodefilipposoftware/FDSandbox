@@ -27,14 +27,14 @@ static void Monitoring(uint targetPid)
     // Create a session to audit Windows Kernel
     using (var session = new TraceEventSession(KernelTraceEventParser.KernelSessionName))
     {
-        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry);
+        session.EnableKernelProvider(KernelTraceEventParser.Keywords.FileIO | KernelTraceEventParser.Keywords.Registry | KernelTraceEventParser.Keywords.NetworkTCPIP);
 
         // FILTER FOR FILES
         session.Source.Kernel.FileIOCreate += (data) =>
         {
             if (data.ProcessID == targetPid)
             Console.WriteLine($"[FILE CREATED] {data.FileName}");
-            };
+        };
 
             // REGISTER FILTER
             session.Source.Kernel.RegistrySetValue += (data) =>
@@ -43,6 +43,11 @@ static void Monitoring(uint targetPid)
                     Console.WriteLine($"[REGISTER MODIFIED] Chiave: {data.KeyName}");
             };
 
+session.Source.Kernel.TcpIpConnect += data =>
+{
+    if (data.ProcessID == targetPid)
+        Console.WriteLine($"TCP Connect: {data.daddr}:{data.dport}");
+};
             // startint events audit
             session.Source.Process();
         }
