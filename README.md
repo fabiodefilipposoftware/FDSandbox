@@ -107,6 +107,7 @@ static void Main(string[] args)
             if (pid > 0) {
                 Console.WriteLine("Process launched in FDSandbox (No Admin)!");
                 Task.Run(() => Monitoring(pid));
+                Console.ReadLine();
             } else {
                 Console.WriteLine("Error during execution of sandbox.");
             }
@@ -116,7 +117,6 @@ static void Main(string[] args)
         {
             Console.WriteLine($"CRITIC ERROR: {ex.Message}");
         }
-    }
 }
 ```
 9. In Project select x64 arch;
