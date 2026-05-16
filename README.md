@@ -110,6 +110,7 @@ static void Main(string[] args)
             } else {
                 Console.WriteLine("Error during execution of sandbox.");
             }
+          }
         }
         catch (Exception ex) 
         {
