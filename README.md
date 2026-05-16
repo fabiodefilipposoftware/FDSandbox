@@ -37,19 +37,21 @@ static void Monitoring(uint targetPid)
         };
 
             // REGISTER FILTER
-            session.Source.Kernel.RegistrySetValue += (data) =>
-            {
-                if (data.ProcessID == targetPid)
-                    Console.WriteLine($"[REGISTER MODIFIED] Chiave: {data.KeyName}");
-            };
+        session.Source.Kernel.RegistrySetValue += (data) =>
+        {
+            if (data.ProcessID == targetPid)
+                 Console.WriteLine($"[REGISTER MODIFIED] Chiave: {data.KeyName}");
+        };
 
-session.Source.Kernel.TcpIpConnect += data =>
-{
-    if (data.ProcessID == targetPid)
-        Console.WriteLine($"TCP Connect: {data.daddr}:{data.dport}");
-};
-            // startint events audit
-            session.Source.Process();
+        // IP FILTER
+        session.Source.Kernel.TcpIpConnect += data =>
+        {
+            if (data.ProcessID == targetPid)
+              Console.WriteLine($"TCP Connect: {data.daddr}:{data.dport}");
+        };
+
+        // startint events audit
+        session.Source.Process();
         }
     }
 
