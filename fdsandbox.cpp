@@ -100,7 +100,7 @@ namespace FDSandbox {
         }
 
    public:
-        // CORRETTO: Il distruttore pulisce il Job Object quando la classe viene rilasciata
+        // Il distruttore pulisce il Job Object quando la classe viene rilasciata
         ~SecureLauncher() {
             if (hJob != NULL) {
                 CloseHandle(hJob);
