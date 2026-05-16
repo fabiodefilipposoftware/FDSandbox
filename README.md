@@ -50,6 +50,16 @@ static void Monitoring(uint targetPid)
               Console.WriteLine($"TCP Connect: {data.daddr}:{data.dport}");
         };
 
+        // DLL FILTER (IMAGE LOAD)
+        session.Source.Kernel.ImageLoad += (data) =>
+        {
+            if (data.ProcessID == targetPid)
+            {
+                // data.FileName ti dà il percorso completo della DLL caricata dal malware
+                Console.WriteLine($"[DLL LOADED] {data.FileName} (Base Address: 0x{data.ImageBase:X})");
+            }
+    };
+
         // startint events audit
         session.Source.Process();
         }
